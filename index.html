@@ -15,7 +15,7 @@
     <div class="aside-main" id="mingdan-con">
         <div class="btn btn-red-outline" data-toggle="modal" id="mingdan-title">中奖名单</div>
         <div class="award-main">
-            <div id="award-123">
+            <!-- <div id="award-123">
                 <div class="award-con" id="award-01">
                     <h3 class="award-title">一等奖</h3>
                     <ul class="win"></ul>
@@ -28,12 +28,12 @@
                     <h3 class="award-title">三等奖</h3>
                     <ul class="win"></ul>
                 </div>
-            </div>
+            </div> -->
             <div class="award-con" id="award-04">
-                <h3 class="award-title">纪念奖</h3>
+                <h3 class="award-title">一等奖</h3>
                 <ul class="win"></ul>
             </div>
-            <a href="javascript:;" id="award04-toggle" class="more">查看更多</a>
+            <!-- <a href="javascript:;" id="award04-toggle" class="more">查看更多</a> -->
         </div>
     </div>
     <img src="./img/lantern.png" alt="" width="85" id="mingdan" class="switch">
@@ -148,6 +148,8 @@
     <div class="modal-dialog">
         <div class="modal-content" >
             <canvas id="lottery-canvas"></canvas>
+            <canvas id="lottery-canvas1"></canvas>
+            <canvas id="lottery-canvas2"></canvas>
         </div>
     </div>
 </div>
@@ -171,11 +173,11 @@
 
         <!--抽奖按钮-->
         <div class="dashboard">
-            <div class="cirle-btn award" id="award-1" data-award="1">一</div>
-            <div class="cirle-btn award" id="award-2" data-award="2">二</div>
+            <!-- <div class="cirle-btn award" id="award-1" data-award="1">一</div>
+            <div class="cirle-btn award" id="award-2" data-award="2">二</div> -->
             <div class="btn btn-red-outline lottery-btn" id="lottery-btn" data-award="">开始抽奖</div>
-            <div class="cirle-btn award" id="award-3" data-award="3">三</div>
-            <div class="cirle-btn award" id="award-4" data-award="4">纪</div>
+            <!-- <div class="cirle-btn award" id="award-3" data-award="3">三</div> -->
+            <!-- <div class="cirle-btn award" id="award-4" data-award="4">一</div> -->
         </div>
     </div>
 </div>
@@ -239,6 +241,9 @@
 <!--<script type="text/javascript" src="js/Tween.js"></script>-->
 
 <script>
+    const config = {
+        speed: 2
+    }
     //除chrome外，其他支持需要在服务器上运行才支持
     if(!window.localStorage){
         alert('不支持localstorage，抽奖无法启动！');
@@ -257,7 +262,7 @@
         delete: function(datas, name) {
             var res = [];
             datas.forEach(function(val, index) {
-                if (name != val.nameen) {
+                if (name != val.namezh) {
                     res.push(val);
                 }
             });
@@ -351,7 +356,7 @@
                             window.msCancelRequestAnimationFrame      ||
                             clearTimeout,
                     // 初始滚动速度
-                    speed = 6,
+                    speed = config.speed,
                     // 每个对话框外部高度(包括padding与margin)
                     // 注：为了方便，这里统一设置为 132+28 = 160
                     item_outer_height = $('.lottery-list:eq(1)').outerHeight(true),
@@ -417,26 +422,22 @@
         lottery_btn.css('background', '#FFBFB7');
 
         setout_time = setTimeout(function () {
-            speed = 15;
-        }, 1000);
+            speed = 10;
+        }, 10);
 
         setout_time = setTimeout(function () {
             speed = 20;
-        }, 3000);
-
+        }, 10);
         setout_time = setTimeout(function () {
             speed = 30;
-        }, 5000);
+        }, 10);
         setout_time = setTimeout(function () {
-            speed = 50;
-        }, 7000);
-        setout_time = setTimeout(function () {
-            speed = 90;
-            $('#lottery-btn').text('可抽奖啦 @_@');
+            speed = 40;
+            $('#lottery-btn').text('可抽奖啦');
             // 当速度达到最终的设置峰值是，isLock 将会解锁，此时，才可以停止动画
             isLock = false;
             clearTimeout(setout_time);
-        }, 9000);
+        }, 10);
     }
 
     // 结束抽奖
@@ -479,6 +480,16 @@
         // 停止动画时要走的距离，即再走三个索引（即两个框+半个框的距离）
         var left_distance = Math.floor(item_outer_height*2 + (item_outer_height - item_height));
         var sure_index = stop_index + 4;
+        var sure_index_1;
+        var sure_index_2;
+
+        if(sure_index > lottery_size / 2){
+            sure_index_1 = sure_index - 2
+            sure_index_2 = sure_index - 4
+        }else {
+            sure_index_1 = sure_index + 2
+            sure_index_2 = sure_index + 4
+        }
 
         // 移动到要到达的指定位置
         var lastStep = function() {
@@ -507,9 +518,6 @@
         // 停止动画
         cancelFrame(timer);
 
-        var award = $('#lottery-btn').data('award');
-        var lottery_name_zh = $('#lottery-wrap .lottery-list').eq(sure_index).data('namezh');
-        var lottery_name_en = $('#lottery-wrap .lottery-list').eq(sure_index).data('nameen');
 
         // 移动完剩下的尺度
         var top = 0;
@@ -532,37 +540,71 @@
             $('.stop-main').hide();
         }, 2500);
 
+
+        var award = $('#lottery-btn').data('award');
+        var lottery_name_zh = $('#lottery-wrap .lottery-list').eq(sure_index).data('namezh');
+        var lottery_name_en = $('#lottery-wrap .lottery-list').eq(sure_index).data('nameen');
+
+        var lottery_name_zh_1 = $('#lottery-wrap .lottery-list').eq(sure_index_1).data('namezh');
+        var lottery_name_en_1 = $('#lottery-wrap .lottery-list').eq(sure_index_1).data('nameen');
+
+        var lottery_name_zh_2 = $('#lottery-wrap .lottery-list').eq(sure_index_2).data('namezh');
+        var lottery_name_en_2 = $('#lottery-wrap .lottery-list').eq(sure_index_2).data('nameen');
+
+
         // 向 localstorage 中写入中奖人数据
         var local_award = local_handle.get('award_'+award);
         var award_tmp = null;
         if (local_award) {
             var award_datas = JSON.parse(local_award);
-            award_tmp = {
-                'nameen': lottery_name_en,
-                'namezh': lottery_name_zh
-            };
-            award_datas.push(award_tmp);
+            award_tmp = [
+                {
+                    'nameen': lottery_name_en,
+                    'namezh': lottery_name_zh
+                },
+                {
+                    'nameen': lottery_name_en_1,
+                    'namezh': lottery_name_zh_1
+                },
+                {
+                    'nameen': lottery_name_en_2,
+                    'namezh': lottery_name_zh_2
+                }
+            ]
+            award_datas = [...award_datas, ...award_tmp]
             local_handle.set("award_"+award, JSON.stringify(award_datas));
         } else {
             var award_datas = [];
-            award_tmp = {
-                'nameen': lottery_name_en,
-                'namezh': lottery_name_zh
-            };
-            award_datas.push(award_tmp);
+            award_tmp = [
+                {
+                    'nameen': lottery_name_en,
+                    'namezh': lottery_name_zh
+                },
+                {
+                    'nameen': lottery_name_en_1,
+                    'namezh': lottery_name_zh_1
+                },
+                {
+                    'nameen': lottery_name_en_2,
+                    'namezh': lottery_name_zh_2
+                }
+            ]
+            award_datas = [...award_datas, ...award_tmp]
             local_handle.set("award_"+award, JSON.stringify(award_datas));
         }
         // 写入上次抽中的奖项记录
         local_handle.set("award_history", award);
 
         // 删除已经中奖的人数据
-        local_handle.delete(lottery_datas, lottery_name_en);
+        local_handle.delete(lottery_datas, lottery_name_zh);
+        local_handle.delete(JSON.parse(local_handle.get("lottery_datas")), lottery_name_zh_1);
+        local_handle.delete(JSON.parse(local_handle.get("lottery_datas")), lottery_name_zh_2);
         // 该项奖项将减1
         award_log['award0'+award] -= 1;
         local_handle.set('award_log', JSON.stringify(award_log));
 
         // 绘制最后出现的中奖canvas图
-        drawAward(award, lottery_name_zh, lottery_name_en);
+        // drawAward(award, lottery_name_zh, lottery_name_en);
 
         // 为防止最后出现空白
         $('#lottery-wrap').html($('#lottery-wrap').html() + $('#lottery-wrap').html());
@@ -570,23 +612,19 @@
         setTimeout(function() {
             // $(".snow-canvas").snow();
             $('#lottery-result').modal('show');
-            drawAward(award, lottery_name_zh, lottery_name_en);
+            drawAward('lottery-canvas', award, lottery_name_zh, lottery_name_en);
+            drawAward('lottery-canvas1', award, lottery_name_zh_1, lottery_name_en_1);
+            drawAward('lottery-canvas2', award, lottery_name_zh_2, lottery_name_en_2);
 
             can_stop = true;
             clearTimeout(arguments.callee);
-
-            // 清除当前的定时任务
-//            isStart = false;
-//            isMove = true;
-//            lottery_btn.text('开始抽奖');
-//            lottery_btn.css('background', 'none');
         }, 4200);
 
     }
 
     // canvas 绘制中奖结果
-    function drawAward(award, name_zh, name_en, pic_format) {
-        var canvas = document.getElementById('lottery-canvas');
+    function drawAward(idName, award, name_zh, name_en, pic_format) {
+        var canvas = document.getElementById(idName);
         var context = canvas.getContext('2d');
         if (!pic_format) {
             pic_format = 'png';
@@ -596,7 +634,7 @@
         var back_img = new Image();
         var avatar = new Image();
         avatar.src = './img/avatar/'+name_en+'.jpg';
-        back_img.src = './img/award_'+award+'.'+pic_format;
+        back_img.src = './img/award_1'+'.'+pic_format;
         back_img.onload = function() {
             context.drawImage(back_img, 0, 0);
 
@@ -772,22 +810,22 @@
         // 开始抽奖按钮
         lottery_btn.click(function () {
             var cur_lottery = $('#lottery-btn').data('award');
-            if (!cur_lottery) {
-                alert('请先设置好奖项再抽奖哦 ^_^');
-                return;
-            }
+            // if (!cur_lottery) {
+            //     alert('请先设置好奖项再抽奖哦 ^_^');
+            //     return;
+            // }
 
-            if (award_log['award0'+cur_lottery] <= 0) {
-                alert('该奖项已经抽完啦，请选择其它奖项哦 ^_^！');
-                return;
-            }
+            // if (award_log['award0'+cur_lottery] <= 0) {
+            //     alert('该奖项已经抽完啦，请选择其它奖项哦 ^_^！');
+            //     return;
+            // }
 
             // 当本轮抽奖结束后，抽奖将会进入短暂休眠期，此时将不会响应抽奖行为
-            if (!isStart && !isMove) {
-                console.log('本轮已结束');
-                window.location.reload();
-                return false;
-            }
+            // if (!isStart && !isMove) {
+            //     console.log('本轮已结束');
+            //     window.location.reload();
+            //     return false;
+            // }
 
             if (!isStart && isMove) {
                 startLottery();
